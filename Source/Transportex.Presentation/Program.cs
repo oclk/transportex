@@ -1,23 +1,31 @@
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Transportex.Presentation.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddPresentationServices(builder.Configuration);
 
 var app = builder.Build();
+var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(o =>
+    {
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            o.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"Transportex - {description.GroupName.ToUpper()}");
+        }
+    });
 }
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

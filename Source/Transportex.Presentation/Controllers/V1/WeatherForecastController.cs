@@ -1,15 +1,17 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Transportex.Presentation.Controllers
+namespace Transportex.Presentation.Controllers.V1
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("Api/V{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
         {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
 
         private readonly ILogger<WeatherForecastController> _logger;
 
@@ -18,6 +20,7 @@ namespace Transportex.Presentation.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
