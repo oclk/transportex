@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Transportex.Presentation.Common.Filters;
 
-namespace Transportex.Presentation.Extensions;
+namespace Transportex.Presentation.Common.Extensions;
 
-public static class ServiceModuleExtention
+public static class ServiceCollectionExtention
 {
     public static IServiceCollection AddPresentationServices(this IServiceCollection services, IConfiguration configuration)
     {
@@ -69,6 +70,7 @@ public static class ServiceModuleExtention
             });
             options.CustomSchemaIds(type => type.ToString());
             options.CustomSchemaIds(type => type.FullName);
+            options.OperationFilter<SwaggerDefaultValuesFilter>();
         });
         #endregion
 
