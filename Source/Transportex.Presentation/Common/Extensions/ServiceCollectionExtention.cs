@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -20,6 +21,10 @@ public static class ServiceCollectionExtention
         services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
+        services.AddAutoMapper(typeof(Program));
+#pragma warning disable CS0618 // Type or member is obsolete
+        services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
+#pragma warning restore CS0618 // Type or member is obsolete
         #endregion
 
         #region Api Versioning Configuration(s)
