@@ -1,13 +1,10 @@
 import '@/common/syles/globals.css'
-import "primereact/resources/themes/lara-light-indigo/theme.css";      
-import "primereact/resources/primereact.min.css";
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-import 'primeflex/primeflex.css';
 
+import React from 'react';
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import AuthStatus from '../common/components/authStatus'
+import DefaultLayout from "@/common/components/layouts/DefaultLayout"
+import AuthStatus from '@/common/components/authStatus'
 import SessionProviderWrapper from '@/common/utils/sessionProviderWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -26,8 +23,10 @@ export default function RootLayout({
         <SessionProviderWrapper>
             <html lang="en">
                 <body className={inter.className}>
-                    <div>{children}</div>
-                    <AuthStatus />
+                    <DefaultLayout>
+                        {children}
+                        <AuthStatus />
+                    </DefaultLayout>
                 </body>
             </html>
         </SessionProviderWrapper>
