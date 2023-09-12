@@ -1,113 +1,261 @@
-import Image from 'next/image'
+"use client";
 
-export default function Home() {
+import React, { useState, useEffect } from 'react';
+import { classNames } from 'primereact/utils';
+import { FilterMatchMode } from 'primereact/api';
+import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
+import { Column, ColumnFilterElementTemplateOptions } from 'primereact/column';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown';
+import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
+import { Tag } from 'primereact/tag';
+import { TriStateCheckbox, TriStateCheckboxChangeEvent } from 'primereact/tristatecheckbox';
+// import { CustomerService } from './service/CustomerService';
+
+interface Representative {
+    name: string;
+    image: string;
+}
+
+interface Country {
+    name: string;
+    code: string;
+}
+
+interface Customer {
+    id: number;
+    name: string;
+    country: Country;
+    company: string;
+    date: string;
+    status: string;
+    verified: boolean;
+    activity: number;
+    representative: Representative;
+    balance: number;
+}
+
+export default function BasicFilterDemo() {
+    const [customers, setCustomers] = useState<Customer[]>([]);
+    const [filters, setFilters] = useState<DataTableFilterMeta>({
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'country.name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        representative: { value: null, matchMode: FilterMatchMode.IN },
+        status: { value: null, matchMode: FilterMatchMode.EQUALS },
+        verified: { value: null, matchMode: FilterMatchMode.EQUALS }
+    });
+    const [loading, setLoading] = useState<boolean>(true);
+    const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
+    const [representatives] = useState<Representative[]>([
+        { name: 'Amy Elsner', image: 'amyelsner.png' },
+        { name: 'Anna Fali', image: 'annafali.png' },
+        { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
+        { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
+        { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
+        { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
+        { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
+        { name: 'Onyama Limba', image: 'onyamalimba.png' },
+        { name: 'Stephen Shaw', image: 'stephenshaw.png' },
+        { name: 'XuXue Feng', image: 'xuxuefeng.png' }
+    ]);
+    const [statuses] = useState<string[]>(['unqualified', 'qualified', 'new', 'negotiation', 'renewal']);
+
+    const getSeverity = (status: string) => {
+        switch (status) {
+            case 'unqualified':
+                return 'danger';
+
+            case 'qualified':
+                return 'success';
+
+            case 'new':
+                return 'info';
+
+            case 'negotiation':
+                return 'warning';
+
+            case 'renewal':
+                return null;
+        }
+    };
+
+    useEffect(() => {
+        // CustomerService.getCustomersMedium().then((data: Customer[]) => {
+        //     setCustomers(getCustomers(data));
+        //     setLoading(false);
+        // });
+        const data: Customer[] = [
+            {
+                id: 1001,
+                name: 'James Butt',
+                country: {
+                    name: 'Algeria',
+                    code: 'dz'
+                },
+                company: 'Benton, John B Jr',
+                date: '2015-09-13',
+                status: 'unqualified',
+                verified: true,
+                activity: 17,
+                representative: {
+                    name: 'Ioni Bowcher',
+                    image: 'ionibowcher.png'
+                },
+                balance: 70663
+            },
+            {
+                id: 1002,
+                name: 'James Butt',
+                country: {
+                    name: 'Algeria',
+                    code: 'dz'
+                },
+                company: 'Benton, John B Jr',
+                date: '2015-09-13',
+                status: 'unqualified',
+                verified: true,
+                activity: 17,
+                representative: {
+                    name: 'Ioni Bowcher',
+                    image: 'ionibowcher.png'
+                },
+                balance: 70663
+            },
+            {
+                id: 1003,
+                name: 'James Butt',
+                country: {
+                    name: 'Algeria',
+                    code: 'dz'
+                },
+                company: 'Benton, John B Jr',
+                date: '2015-09-13',
+                status: 'unqualified',
+                verified: true,
+                activity: 17,
+                representative: {
+                    name: 'Ioni Bowcher',
+                    image: 'ionibowcher.png'
+                },
+                balance: 70663
+            },
+        ]
+        setCustomers(getCustomers(data));
+        setLoading(false);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const getCustomers = (data: Customer[]) => {
+        return [...(data || [])].map((d) => {
+            // @ts-ignore
+            d.date = new Date(d.date);
+
+            return d;
+        });
+    };
+
+    const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        let _filters = { ...filters };
+
+        // @ts-ignore
+        _filters['global'].value = value;
+
+        setFilters(_filters);
+        setGlobalFilterValue(value);
+    };
+
+    const renderHeader = () => {
+        return (
+            <div className="flex justify-content-end">
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
+                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+                </span>
+            </div>
+        );
+    };
+
+    const countryBodyTemplate = (rowData: Customer) => {
+        return (
+            <div className="flex align-items-center gap-2">
+                <img alt="flag" src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png" className={`flag flag-${rowData.country.code}`} style={{ width: '24px' }} />
+                <span>{rowData.country.name}</span>
+            </div>
+        );
+    };
+
+    const representativeBodyTemplate = (rowData: Customer) => {
+        const representative = rowData.representative;
+
+        return (
+            <div className="flex align-items-center gap-2">
+                <img alt={representative.name} src={`https://primefaces.org/cdn/primereact/images/avatar/${representative.image}`} width="32" />
+                <span>{representative.name}</span>
+            </div>
+        );
+    };
+
+    const representativesItemTemplate = (option: Representative) => {
+        return (
+            <div className="flex align-items-center gap-2">
+                <img alt={option.name} src={`https://primefaces.org/cdn/primereact/images/avatar/${option.image}`} width="32" />
+                <span>{option.name}</span>
+            </div>
+        );
+    };
+
+    const statusBodyTemplate = (rowData: Customer) => {
+        return <Tag value={rowData.status} severity={getSeverity(rowData.status)} />;
+    };
+
+    const statusItemTemplate = (option: string) => {
+        return <Tag value={option} severity={getSeverity(option)} />;
+    };
+
+    const verifiedBodyTemplate = (rowData: Customer) => {
+        return <i className={classNames('pi', { 'true-icon pi-check-circle': rowData.verified, 'false-icon pi-times-circle': !rowData.verified })}></i>;
+    };
+
+    const representativeRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
+        return (
+            <MultiSelect
+                value={options.value}
+                options={representatives}
+                itemTemplate={representativesItemTemplate}
+                onChange={(e: MultiSelectChangeEvent) => options.filterApplyCallback(e.value)}
+                optionLabel="name"
+                placeholder="Any"
+                className="p-column-filter"
+                maxSelectedLabels={1}
+                style={{ minWidth: '14rem' }}
+            />
+        );
+    };
+
+    const statusRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
+        return (
+            <Dropdown value={options.value} options={statuses} onChange={(e: DropdownChangeEvent) => options.filterApplyCallback(e.value)} itemTemplate={statusItemTemplate} placeholder="Select One" className="p-column-filter" showClear style={{ minWidth: '12rem' }} />
+        );
+    };
+
+    const verifiedRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
+        return <TriStateCheckbox value={options.value} onChange={(e: TriStateCheckboxChangeEvent) => options.filterApplyCallback(e.value)} />;
+    };
+
+    const header = renderHeader();
+
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-                <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-                    Get started by editing&nbsp;
-                    <code className="font-mono font-bold">src/app/page.tsx</code>
-                </p>
-                <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-                    <a
-                        className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-                        href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        By{' '}
-                        <Image
-                            src="/vercel.svg"
-                            alt="Vercel Logo"
-                            className="dark:invert"
-                            width={100}
-                            height={24}
-                            priority
-                        />
-                    </a>
-                </div>
-            </div>
-
-            <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-                <Image
-                    className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-                    src="/next.svg"
-                    alt="Next.js Logo"
-                    width={180}
-                    height={37}
-                    priority
-                />
-            </div>
-
-            <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-                <a
-                    href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-                    className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <h2 className={`mb-3 text-2xl font-semibold`}>
-                        Docs{' '}
-                        <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                            -&gt;
-                        </span>
-                    </h2>
-                    <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-                        Find in-depth information about Next.js features and API.
-                    </p>
-                </a>
-
-                <a
-                    href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                    className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <h2 className={`mb-3 text-2xl font-semibold`}>
-                        Learn{' '}
-                        <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                            -&gt;
-                        </span>
-                    </h2>
-                    <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-                        Learn about Next.js in an interactive course with&nbsp;quizzes!
-                    </p>
-                </a>
-
-                <a
-                    href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-                    className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <h2 className={`mb-3 text-2xl font-semibold`}>
-                        Templates{' '}
-                        <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                            -&gt;
-                        </span>
-                    </h2>
-                    <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-                        Explore the Next.js 13 playground.
-                    </p>
-                </a>
-
-                <a
-                    href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-                    className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <h2 className={`mb-3 text-2xl font-semibold`}>
-                        Deploy{' '}
-                        <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                            -&gt;
-                        </span>
-                    </h2>
-                    <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-                        Instantly deploy your Next.js site to a shareable URL with Vercel.
-                    </p>
-                </a>
-            </div>
-        </main>
-    )
+        <div className="card">
+            <DataTable value={customers} paginator rows={10} dataKey="id" filters={filters} filterDisplay="row" loading={loading}
+                globalFilterFields={['name', 'country.name', 'representative.name', 'status']} header={header} emptyMessage="No customers found.">
+                <Column field="name" header="Name" filter filterPlaceholder="Search by name" style={{ minWidth: '12rem' }} />
+                <Column header="Country" filterField="country.name" style={{ minWidth: '12rem' }} body={countryBodyTemplate} filter filterPlaceholder="Search by country" />
+                <Column header="Agent" filterField="representative" showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '14rem' }}
+                    body={representativeBodyTemplate} filter filterElement={representativeRowFilterTemplate} />
+                <Column field="status" header="Status" showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} style={{ minWidth: '12rem' }} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate} />
+                <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} body={verifiedBodyTemplate} filter filterElement={verifiedRowFilterTemplate} />
+            </DataTable>
+        </div>
+    );
 }
