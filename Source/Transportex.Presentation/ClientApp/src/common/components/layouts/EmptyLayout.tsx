@@ -1,11 +1,15 @@
 import React from 'react';
 
-const EmptyLayout: React.FC = ({ children }: React.PropsWithChildren<{}>) => {
+interface DefaultLayoutProps {
+    children: React.ReactNode;
+}
+
+const EmptyLayout: React.FC<DefaultLayoutProps> = ({ children }: { children: React.ReactNode }) => {
     return (
         <>
             {children}
         </>
     );
-};
+}
 
 export default EmptyLayout;

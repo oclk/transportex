@@ -4,21 +4,22 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     ApartmentOutlined,
-    CalendarOutlined,
     CodeOutlined,
     DoubleLeftOutlined,
     DoubleRightOutlined,
     FileSearchOutlined,
-    FileTextOutlined,
-    ProjectOutlined,
     SettingOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Button, Layout, Menu, Space, Tooltip, theme } from 'antd';
+import { Button, Layout, Menu, Select, Space, Tooltip, theme } from 'antd';
 
 const { Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
+
+const handleChange = (value: string) => {
+    console.log(`selected ${value}`);
+};
 
 function getItem(
     label: React.ReactNode,
@@ -37,24 +38,8 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-    getItem('Calendar', 'calendar', <CalendarOutlined />),
     getItem('Groups', 'groups', <ApartmentOutlined />),
     getItem('Explore', 'explore', <FileSearchOutlined />),
-    getItem('Trainings', '1', <ProjectOutlined />, [
-        getItem('Yours', 'trainings', <span style={{ color: 'orange' }}>●</span>),
-        getItem('Enrolled', 'trainings/enrolled', <span style={{ color: 'red' }}>●</span>),
-        getItem('Starred', 'trainings/starred', <span style={{ color: 'yellow' }}>●</span>),
-    ]),
-    getItem('Assignments', '2', <FileTextOutlined />, [
-        getItem('Yours', 'assignments', <span style={{ color: 'orange' }}>●</span>),
-        getItem('Enrolled', 'assignments/enrolled', <span style={{ color: 'red' }}>●</span>),
-        getItem('Starred', 'assignments/starred', <span style={{ color: 'yellow' }}>●</span>),
-    ]),
-    getItem('Pages', '3', <FileTextOutlined />, [
-        getItem('Yours', 'pages', <span style={{ color: 'orange' }}>●</span>),
-        getItem('Enrolled', 'pages/enrolled', <span style={{ color: 'red' }}>●</span>),
-        getItem('Starred', 'pages/starred', <span style={{ color: 'yellow' }}>●</span>),
-    ]),
     getItem('Courses', '4', <CodeOutlined />, [
         getItem('Yours', 'courses', <span style={{ color: 'orange' }}>●</span>),
         getItem('Enrolled', 'courses/enrolled', <span style={{ color: 'red' }}>●</span>),
