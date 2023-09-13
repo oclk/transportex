@@ -17,7 +17,7 @@ async function refreshAccessToken(token: any) {
     });
     const refreshToken = await resp.json();
     if (!resp.ok) throw refreshToken;
-
+    
     return {
         ...token,
         access_token: refreshToken.access_token,
@@ -40,7 +40,7 @@ export const authOptions = {
     callbacks: {
         async jwt({ token, account }: any) {
             const nowTimeStamp = Math.floor(Date.now() / 1000);
-
+            console.log(account)
             if (account) {
                 // account is only available the first time this callback is called on a new session (after the user signs in)
                 token.decoded = jwt_decode(account.access_token);

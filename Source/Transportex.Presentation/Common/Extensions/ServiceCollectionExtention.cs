@@ -89,11 +89,11 @@ public static class ServiceCollectionExtention
                         .Equals("external", StringComparison.OrdinalIgnoreCase);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 
-                options.Authority = configuration["Keycloak:RealmUrl"];
+                options.Authority = $"{configuration["Keycloak:RealmUrl"]}/realms/transportex/";
                 options.Audience = configuration["Keycloak:Client"];
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidAudiences = new string[] { "account", "transportex" }
+                    ValidAudiences = new string[] { "account", "transportex", "service-account" }
                 };
                 options.RequireHttpsMetadata = sslRequired;
                 options.SaveToken = true;
@@ -109,6 +109,27 @@ public static class ServiceCollectionExtention
                 };
                 options.Validate();
             });
+        #endregion
+
+        #region CORS Configuration
+        string[] _allowedOrigins = Array.Empty<string>();
+
+        if (!string.IsNullOrEmpty(configuration["AllowedOrigin"]))
+        {
+            _allowedOrigins = configuration["AllowedOrigin"].Split(',', StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(
+                builder =>
+                {
+                    builder.WithOrigins(_allowedOrigins)
+                            .AllowAnyHeader()
+                            .WithMethods("GET", "PUT", "POST", "DELETE", "UPDATE", "OPTIONS")
+                            .AllowCredentials();
+                });
+        });
         #endregion
 
         return services;

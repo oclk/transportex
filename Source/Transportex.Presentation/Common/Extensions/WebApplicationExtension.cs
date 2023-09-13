@@ -11,7 +11,7 @@ public static class WebApplicationExtension
 
         #region General
         app.MapControllers();
-        app.UseHttpsRedirection();
+        // app.UseHttpsRedirection();
         #endregion
 
         #region Swagger
@@ -31,11 +31,13 @@ public static class WebApplicationExtension
 
         #region Middleware(s)
         app.UseMiddleware<ErrorHandlingMiddleware>();
+        //app.UseMiddleware(typeof(SecurityMiddleware));
         #endregion
 
         #region Auth
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseCors();
         #endregion
 
         return app;

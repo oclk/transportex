@@ -63,8 +63,8 @@ export default function Auth() {
     if (session) {
         return (
             <Dropdown menu={{ items }} placement="bottom">
-                <Button type='text'>
-                    <UserOutlined />
+                <Button type='text' icon={<UserOutlined />}>
+                    {session.user?.name}
                 </Button>
             </Dropdown>
         );
