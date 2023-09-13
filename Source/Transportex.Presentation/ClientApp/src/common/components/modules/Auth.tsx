@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from 'next/link'
 import { useSession, signIn, signOut } from "next-auth/react";
-import { Button, Dropdown, Spin } from 'antd';
+import { Button, Dropdown } from 'antd';
 import { UserOutlined, LoginOutlined, LogoutOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 
@@ -10,17 +11,13 @@ const items: MenuProps['items'] = [
     {
         key: '1',
         label: (
-            <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
-                Your Profile
-            </a>
+            <Link href="/profile">Your Profile</Link>
         ),
     },
     {
         key: '2',
         label: (
-            <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-                Your Organizations
-            </a>
+            <Link href="/organizations">Your Organizations</Link>
         ),
     },
     {
