@@ -31,7 +31,7 @@ public static class WebApplicationExtension
 
         #region Middleware(s)
         app.UseMiddleware<ErrorHandlingMiddleware>();
-        //app.UseMiddleware(typeof(SecurityMiddleware));
+        app.UseMiddleware(typeof(SecurityMiddleware));
         #endregion
 
         #region Auth
